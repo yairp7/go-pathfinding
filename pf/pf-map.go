@@ -17,6 +17,13 @@ const (
 	TileStateObstacle     = iota
 )
 
+var (
+	TileStateStartColor    color.RGBA = color.RGBA{R: 255, G: 255, B: 0, A: 255}
+	TileStateEndColor      color.RGBA = color.RGBA{R: 0, G: 255, B: 255, A: 255}
+	TileStatePathColor     color.RGBA = color.RGBA{R: 255, G: 0, B: 255, A: 255}
+	TileStateObstacleColor color.RGBA = color.RGBA{R: 127, G: 50, B: 127, A: 255}
+)
+
 type SearchNodeData struct {
 	Tile   *PFTile
 	Parent *SearchNodeData
@@ -61,6 +68,20 @@ func (m PFMap) ShortestPath(
 	)
 }
 
+func (m PFMap) tileToColor(tileType int) color.RGBA {
+	switch tileType {
+	case TileStateStart:
+		return TileStateStartColor
+	case TileStateEnd:
+		return TileStateEndColor
+	case TileStatePath:
+		return TileStatePathColor
+	case TileStateObstacle:
+		return TileStateObstacleColor
+	}
+	return color.RGBA{R: 255, G: 255, B: 255, A: 255}
+}
+
 func (m PFMap) Draw(screen *ebiten.Image) {
 	screen.Fill(color.Black)
 	gap := m.tileSize.Scale(0.05)
@@ -70,17 +91,7 @@ func (m PFMap) Draw(screen *ebiten.Image) {
 			tile := m.tiles[row][col]
 			x := float64(col*int(m.tileSize.X)) + gap.X
 			y := float64(row*int(m.tileSize.Y)) + gap.Y
-			c := color.RGBA{R: 255, G: 255, B: 255, A: 255}
-			if tile.T == TileStateStart {
-				c = color.RGBA{R: 255, G: 255, B: 0, A: 255}
-			} else if tile.T == TileStateEnd {
-				c = color.RGBA{R: 0, G: 255, B: 255, A: 255}
-			} else if tile.T == TileStatePath {
-				c = color.RGBA{R: 255, G: 0, B: 255, A: 255}
-			} else if tile.T == TileStateObstacle {
-				c = color.RGBA{R: 127, G: 50, B: 127, A: 255}
-			}
-			vector.DrawFilledRect(screen, float32(x), float32(y), float32(drawTileSize.X), float32(drawTileSize.Y), c, true)
+			vector.DrawFilledRect(screen, float32(x), float32(y), float32(drawTileSize.X), float32(drawTileSize.Y), m.tileToColor(tile.T), true)
 		}
 	}
 }
@@ -270,7 +281,6 @@ func (s PFMap) aStarAlgo(
 	visited := make(map[*PFTile]bool)
 
 	for len(*h.Values) > 0 {
-		// Find the nearest yet to visit node
 		p := h.Pop()
 		node := p.Data.Tile
 
@@ -287,7 +297,6 @@ func (s PFMap) aStarAlgo(
 				continue
 			}
 
-			// We calculate the total spent so far plus the cost and the path of getting here
 			h.Push(
 				utils.HeapNode[SearchNodeData]{
 					TotalWeight: p.TotalWeight + e.weight + hFunc(e.node, destination),
