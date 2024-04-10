@@ -56,7 +56,7 @@ func (m PFMap) ShortestPath(
 		fromTile.Row, fromTile.Col,
 		toTile.Row, toTile.Col,
 		func(current, target *PFTile) float64 {
-			return current.P.To(target.P).Length()
+			return current.P.To(target.P).Length() / m.tileSize.X
 		},
 	)
 }
