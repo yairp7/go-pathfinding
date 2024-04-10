@@ -241,12 +241,12 @@ func (s PFMap) bfsBuildGraph() (tilesGraph navGraph[*PFTile]) {
 
 		addNode(&s.tiles[row][col], row, col-1, 1, queue)
 		addNode(&s.tiles[row][col], row, col+1, 1, queue)
-		addNode(&s.tiles[row][col], row-1, col-1, 1.41, queue)
-		addNode(&s.tiles[row][col], row-1, col+1, 1.41, queue)
+		// addNode(&s.tiles[row][col], row-1, col-1, 1.41, queue)
+		// addNode(&s.tiles[row][col], row-1, col+1, 1.41, queue)
 		addNode(&s.tiles[row][col], row-1, col, 1, queue)
 		addNode(&s.tiles[row][col], row+1, col, 1, queue)
-		addNode(&s.tiles[row][col], row+1, col-1, 1.41, queue)
-		addNode(&s.tiles[row][col], row+1, col+1, 1.41, queue)
+		// addNode(&s.tiles[row][col], row+1, col-1, 1.41, queue)
+		// addNode(&s.tiles[row][col], row+1, col+1, 1.41, queue)
 	}
 
 	return
