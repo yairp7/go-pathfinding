@@ -2,6 +2,7 @@ package pf
 
 import (
 	"image/color"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -63,7 +64,7 @@ func (m PFMap) ShortestPath(
 		fromTile.Row, fromTile.Col,
 		toTile.Row, toTile.Col,
 		func(current, target *PFTile) float64 {
-			return current.P.To(target.P).Length() / m.tileSize.X
+			return math.Abs(current.P.X-target.P.X) + math.Abs(current.P.Y-target.P.Y)
 		},
 	)
 }
