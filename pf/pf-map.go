@@ -1,6 +1,7 @@
 package pf
 
 import (
+	"errors"
 	"image/color"
 	"math"
 
@@ -57,7 +58,7 @@ func NewPFMap(mapSize utils.Vec2, tileSize utils.Vec2) PFMap {
 func (m PFMap) ShortestPath(
 	fromX, fromY int,
 	toX, toY int,
-) SearchNodeData {
+) (SearchNodeData, error) {
 	fromTile := m.tileByCoords(fromX, fromY)
 	toTile := m.tileByCoords(toX, toY)
 	return m.aStarAlgo(
@@ -268,7 +269,7 @@ func (s PFMap) aStarAlgo(
 	fromRow, fromCol int,
 	toRow, toCol int,
 	hFunc func(current, target *PFTile) float64,
-) SearchNodeData {
+) (SearchNodeData, error) {
 	origin := &s.tiles[fromRow][fromCol]
 	destination := &s.tiles[toRow][toCol]
 
@@ -290,7 +291,7 @@ func (s PFMap) aStarAlgo(
 		}
 
 		if node == destination {
-			return p.Data
+			return p.Data, nil
 		}
 
 		for _, e := range s.graph.getEdges(node) {
@@ -309,5 +310,5 @@ func (s PFMap) aStarAlgo(
 		visited[node] = true
 	}
 
-	return SearchNodeData{}
+	return SearchNodeData{}, errors.New("no path found")
 }

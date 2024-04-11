@@ -84,11 +84,7 @@ func (e *Engine) onMouseClicked() {
 	}
 
 	if e.state == SetStartState {
-		if e.path != nil {
-			e.pfMap.ClearPath(e.path)
-		}
-		e.pfMap.ClearTile(int(e.start.X), int(e.start.Y))
-		e.pfMap.ClearTile(int(e.end.X), int(e.end.Y))
+		e.reset()
 		e.pfMap.SetStartPoint(int(p.X), int(p.Y))
 		e.start = p
 		e.state = SetEndState
@@ -100,8 +96,21 @@ func (e *Engine) onMouseClicked() {
 	}
 }
 
+func (e *Engine) reset() {
+	if e.path != nil {
+		e.pfMap.ClearPath(e.path)
+	}
+	e.pfMap.ClearTile(int(e.start.X), int(e.start.Y))
+	e.pfMap.ClearTile(int(e.end.X), int(e.end.Y))
+}
+
 func (e *Engine) calcPath() {
-	data := e.pfMap.ShortestPath(int(e.start.X), int(e.start.Y), int(e.end.X), int(e.end.Y))
+	data, err := e.pfMap.ShortestPath(int(e.start.X), int(e.start.Y), int(e.end.X), int(e.end.Y))
+
+	if err != nil {
+		e.reset()
+		return
+	}
 
 	path := utils.NewStack[*pf.PFTile]()
 	node := &data
